@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Forecast Studio — A premium AI-powered sales forecasting dashboard for demand prediction, EDA, and model comparison.">
+  <title>Forecast Studio — Sales Forecasting Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Mobile Toggle -->
+<button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+</button>
+
+<!-- Sidebar Backdrop (mobile) -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<div class="app-layout">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="title">Forecast Studio</span>
+        <span class="tagline">demand forecasting</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+        </svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-page="forecast" onclick="navigate('forecast')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+        Forecast
+      </button>
+      <button class="nav-item" data-page="eda" onclick="navigate('eda')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        EDA Explorer
+      </button>
+      <button class="nav-item" data-page="compare" onclick="navigate('compare')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="6" height="18" rx="1"></rect>
+          <rect x="15" y="8" width="6" height="13" rx="1"></rect>
+          <rect x="9" y="6" width="6" height="15" rx="1"></rect>
+        </svg>
+        Compare
+      </button>
+      <button class="nav-item" data-page="about" onclick="navigate('about')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        About
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <span class="icon-sun">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="icon-moon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+        Toggle Theme
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-content">
+
+    <!-- ============ PAGE: DASHBOARD ============ -->
+    <div id="page-dashboard" class="page active">
+      <h1 class="page-title">Welcome to Forecast Studio</h1>
+      <p class="page-subtitle">AI-powered demand forecasting with actionable insights. Explore your data, run predictions, and compare models — all in one place.</p>
+
+      <!-- KPI Row -->
+      <div class="stat-grid" id="dash-kpis">
+        <div class="kpi-card">
+          <span class="kpi-label">Total Records</span>
+          <span class="kpi-value mono" id="kpi-records">—</span>
+          <span class="kpi-sub text-muted">data points loaded</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Date Range</span>
+          <span class="kpi-value mono" id="kpi-daterange" style="font-size:18px;">—</span>
+          <span class="kpi-sub text-muted">training window</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Stores</span>
+          <span class="kpi-value mono" id="kpi-stores">—</span>
+          <span class="kpi-sub text-muted">unique locations</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Items</span>
+          <span class="kpi-value mono" id="kpi-items">—</span>
+          <span class="kpi-sub text-muted">product SKUs</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <h2 class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        Quick Actions
+      </h2>
+      <div class="quick-grid">
+        <div class="quick-card" onclick="navigate('forecast')">
+          <div class="quick-icon indigo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          </div>
+          <div class="quick-text">
+            <h3>Run a Forecast</h3>
+            <p>Generate a 28-day demand prediction with Random Forest and compare against baselines.</p>
+          </div>
+        </div>
+        <div class="quick-card" onclick="navigate('eda')">
+          <div class="quick-icon emerald">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          </div>
+          <div class="quick-text">
+            <h3>Explore Data</h3>
+            <p>Dive into sales patterns, seasonality, and statistical summaries for any store-item pair.</p>
+          </div>
+        </div>
+        <div class="quick-card" onclick="navigate('compare')">
+          <div class="quick-icon amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="18" rx="1"></rect><rect x="15" y="8" width="6" height="13" rx="1"></rect><rect x="9" y="6" width="6" height="15" rx="1"></rect></svg>
+          </div>
+          <div class="quick-text">
+            <h3>Compare Series</h3>
+            <p>Overlay up to 4 store-item forecasts and compare model performance side by side.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PAGE: FORECAST ============ -->
+    <div id="page-forecast" class="page">
+      <h1 class="page-title">Forecast Engine</h1>
+      <p class="page-subtitle">Select a store-item combination and generate a 28-day demand forecast powered by Random Forest.</p>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <div class="form-group">
+          <label for="fc-store">Store</label>
+          <select class="select-styled" id="fc-store"><option value="">Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label for="fc-item">Item</label>
+          <select class="select-styled" id="fc-item"><option value="">Loading…</option></select>
+        </div>
+        <button class="btn-primary" id="fc-run-btn" onclick="runForecast()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Run Forecast
+        </button>
+      </div>
+
+      <!-- Loading Skeleton -->
+      <div class="loading-section" id="fc-loading">
+        <div class="stat-grid mb-md">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+        <div class="skeleton skeleton-chart"></div>
+      </div>
+
+      <!-- Results -->
+      <div id="fc-results" class="hidden">
+        <!-- Metrics -->
+        <div class="stat-grid" id="fc-kpis">
+          <div class="kpi-card hero">
+            <span class="kpi-label">Model MAE</span>
+            <span class="kpi-value mono" id="fc-mae">—</span>
+            <span class="kpi-sub">mean absolute error</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Best Baseline MAE</span>
+            <span class="kpi-value mono" id="fc-baseline-mae">—</span>
+            <span class="kpi-sub" id="fc-baseline-name">baseline</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Model MAPE</span>
+            <span class="kpi-value mono" id="fc-mape">—</span>
+            <span class="kpi-sub">mean absolute % error</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Model RMSE</span>
+            <span class="kpi-value mono" id="fc-rmse">—</span>
+            <span class="kpi-sub">root mean squared error</span>
+          </div>
+        </div>
+
+        <!-- Improvement Badge -->
+        <div class="mb-lg" id="fc-improvement-row">
+          <span id="fc-improvement-badge" class="badge"></span>
+        </div>
+
+        <!-- Forecast Chart -->
+        <div class="glass-card mb-lg">
+          <h2 class="section-title mb-md">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Forecast vs Actual
+          </h2>
+          <div class="chart-legend" id="fc-legend"></div>
+          <div class="chart-container">
+            <canvas id="fc-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Feature Importance -->
+        <div class="glass-card mb-lg">
+          <h2 class="section-title mb-md">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            Feature Importance
+          </h2>
+          <div id="fc-features"></div>
+        </div>
+
+        <!-- Download -->
+        <button class="btn-secondary" onclick="downloadCSV()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ PAGE: EDA ============ -->
+    <div id="page-eda" class="page">
+      <h1 class="page-title">EDA Explorer</h1>
+      <p class="page-subtitle">Explore sales distributions, seasonality, and statistical patterns across your data.</p>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <div class="form-group">
+          <label for="eda-store">Store</label>
+          <select class="select-styled" id="eda-store"><option value="">Loading…</option></select>
+        </div>
+        <div class="form-group">
+          <label for="eda-item">Item</label>
+          <select class="select-styled" id="eda-item"><option value="">Loading…</option></select>
+        </div>
+        <button class="btn-primary" id="eda-run-btn" onclick="runEDA()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Analyze
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-section" id="eda-loading">
+        <div class="stat-grid mb-md">
+          <div class="skeleton skeleton-card" style="height:80px"></div>
+          <div class="skeleton skeleton-card" style="height:80px"></div>
+          <div class="skeleton skeleton-card" style="height:80px"></div>
+          <div class="skeleton skeleton-card" style="height:80px"></div>
+          <div class="skeleton skeleton-card" style="height:80px"></div>
+        </div>
+        <div class="skeleton skeleton-chart"></div>
+      </div>
+
+      <!-- Results -->
+      <div id="eda-results" class="hidden">
+        <!-- Stats -->
+        <div class="stat-grid" id="eda-stats">
+          <div class="kpi-card">
+            <span class="kpi-label">Total Days</span>
+            <span class="kpi-value mono" id="eda-days">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Avg Sales</span>
+            <span class="kpi-value mono" id="eda-avg">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Std Dev</span>
+            <span class="kpi-value mono" id="eda-std">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Min</span>
+            <span class="kpi-value mono" id="eda-min">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Max</span>
+            <span class="kpi-value mono" id="eda-max">—</span>
+          </div>
+        </div>
+
+        <!-- Seasonality -->
+        <div class="seasonality-indicator" id="eda-seasonality">
+          <div class="season-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a5 5 0 0 0-10 0"></path><line x1="12" y1="2" x2="12" y2="9"></line><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line><line x1="1" y1="18" x2="3" y2="18"></line><line x1="21" y1="18" x2="23" y2="18"></line><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line><line x1="23" y1="22" x2="1" y2="22"></line><polyline points="8 6 12 2 16 6"></polyline></svg>
+          </div>
+          <div>
+            <div class="season-text" id="eda-season-text">Analyzing…</div>
+            <div class="season-sub" id="eda-season-sub">Detecting dominant pattern</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="glass-card mb-lg">
+          <h2 class="section-title mb-md">Sales Timeline</h2>
+          <div class="chart-container"><canvas id="eda-timeline-chart"></canvas></div>
+        </div>
+
+        <div class="compare-grid mb-lg">
+          <div class="glass-card">
+            <h2 class="section-title mb-md">Average by Weekday</h2>
+            <div class="chart-container"><canvas id="eda-weekday-chart"></canvas></div>
+          </div>
+          <div class="glass-card">
+            <h2 class="section-title mb-md">Average by Month</h2>
+            <div class="chart-container"><canvas id="eda-month-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PAGE: COMPARE ============ -->
+    <div id="page-compare" class="page">
+      <h1 class="page-title">Compare Series</h1>
+      <p class="page-subtitle">Overlay multiple store-item forecasts and compare model performance side by side.</p>
+
+      <div class="series-controls" id="cmp-selectors">
+        <!-- Series selectors are added dynamically -->
+      </div>
+
+      <div class="flex gap-md mb-lg">
+        <button class="btn-secondary btn-sm" id="cmp-add-btn" onclick="addComparisonSeries()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add Series
+        </button>
+        <button class="btn-primary" onclick="runComparison()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="18" rx="1"></rect><rect x="15" y="8" width="6" height="13" rx="1"></rect><rect x="9" y="6" width="6" height="15" rx="1"></rect></svg>
+          Compare
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-section" id="cmp-loading">
+        <div class="skeleton skeleton-chart"></div>
+      </div>
+
+      <!-- Results -->
+      <div id="cmp-results" class="hidden">
+        <div class="glass-card mb-lg">
+          <h2 class="section-title mb-md">Metrics Comparison</h2>
+          <div style="overflow-x:auto">
+            <table class="metric-table" id="cmp-table">
+              <thead><tr><th>Series</th><th>Store</th><th>Item</th><th>MAE</th><th>MAPE%</th><th>RMSE</th></tr></thead>
+              <tbody id="cmp-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="glass-card mb-lg">
+          <h2 class="section-title mb-md">Forecast Overlay</h2>
+          <div class="chart-legend" id="cmp-legend"></div>
+          <div class="chart-container"><canvas id="cmp-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PAGE: ABOUT ============ -->
+    <div id="page-about" class="page">
+      <h1 class="page-title">About the Methodology</h1>
+      <p class="page-subtitle">Understand the science behind Forecast Studio's demand prediction engine.</p>
+
+      <!-- Methodology Flow -->
+      <div class="glass-card mb-lg">
+        <h2 class="section-title mb-md">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          Pipeline Overview
+        </h2>
+        <div class="flow-diagram">
+          <div class="flow-step"><div class="flow-box">📦 Raw Data</div><span class="flow-arrow">→</span></div>
+          <div class="flow-step"><div class="flow-box">⚙️ Feature Engineering</div><span class="flow-arrow">→</span></div>
+          <div class="flow-step"><div class="flow-box">✂️ Train / Test Split</div><span class="flow-arrow">→</span></div>
+          <div class="flow-step"><div class="flow-box">🌲 Model Training</div><span class="flow-arrow">→</span></div>
+          <div class="flow-step"><div class="flow-box">📊 Evaluation</div></div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card indigo">
+          <div class="info-title">
+            <div class="info-icon" style="background:rgba(99,102,241,0.15)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+            </div>
+            Random Forest Model
+          </div>
+          <div class="info-body">
+            We use a <strong>Random Forest Regressor</strong> with <strong>400 estimators</strong> (decision trees). Each tree learns a slightly different view of the data through bootstrap sampling and random feature subsets. The ensemble's averaged predictions are more robust and less prone to overfitting than any single tree. The model excels at capturing non-linear relationships between calendar features, lagged sales, and rolling statistics.
+          </div>
+        </div>
+
+        <div class="info-card emerald">
+          <div class="info-title">
+            <div class="info-icon" style="background:rgba(16,185,129,0.15)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            Why 28-Day Horizon
+          </div>
+          <div class="info-body">
+            The <strong>28-day (4-week) forecast horizon</strong> aligns with typical retail replenishment cycles. It's long enough to inform purchasing and staffing decisions while short enough to maintain high accuracy. A 4-week window also captures full weekly seasonality patterns — every day of the week appears exactly 4 times, providing balanced predictions.
+          </div>
+        </div>
+
+        <div class="info-card rose">
+          <div class="info-title">
+            <div class="info-icon" style="background:rgba(239,68,68,0.15)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            Data Leakage Prevention
+          </div>
+          <div class="info-body">
+            To prevent data leakage, all <strong>lag features start at lag ≥ 28</strong> (matching the forecast horizon). This ensures the model never "sees" future sales during training. We also use a strict <strong>time-based train/test split</strong> — the test set always comes chronologically after the training set, simulating real-world deployment where you only have past data.
+          </div>
+        </div>
+
+        <div class="info-card amber">
+          <div class="info-title">
+            <div class="info-icon" style="background:rgba(245,158,11,0.15)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+            </div>
+            Baselines Matter
+          </div>
+          <div class="info-body">
+            We compare against two baselines: <strong>Weekly Naive</strong> (repeat last week's sales) and <strong>Yearly Naive</strong> (use same period last year). If our model can't beat these simple methods, it's not adding value. The best baseline's MAE is shown alongside model MAE so you can immediately gauge the improvement — a true "sanity check" for model performance.
+          </div>
+        </div>
+
+        <div class="info-card blue">
+          <div class="info-title">
+            <div class="info-icon" style="background:rgba(59,130,246,0.15)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+            Feature Engineering
+          </div>
+          <div class="info-body">
+            The model uses three categories of engineered features: <strong>Calendar features</strong> (day-of-week, month, quarter, year, holidays, weekend flag), <strong>Lag features</strong> (sales at t−28, t−35, t−42, t−56, t−91 days), and <strong>Rolling statistics</strong> (28-day and 56-day rolling mean, std, min, max). These features capture both short-term momentum and long-term seasonal patterns in the data.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+/* ==========================================================
+   GLOBALS
+   ========================================================== */
+let seriesData = { stores: [], items: [] };
+let forecastData = null;   // last forecast result
+let charts = {};           // track Chart.js instances for cleanup
+
+const SERIES_COLORS = [
+  { main: '#6366f1', bg: 'rgba(99,102,241,0.1)',  name: 'Indigo'  },
+  { main: '#10b981', bg: 'rgba(16,185,129,0.1)',  name: 'Emerald' },
+  { main: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  name: 'Amber'   },
+  { main: '#f43f5e', bg: 'rgba(244,63,94,0.1)',   name: 'Rose'    }
+];
+
+/* ==========================================================
+   THEME
+   ========================================================== */
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('fs-theme', isDark ? 'dark' : 'light');
+  // Update charts for new theme
+  Object.values(charts).forEach(c => {
+    if (c && !c._destroyed) { try { c.update(); } catch(e) {} }
+  });
+}
+
+function restoreTheme() {
+  const saved = localStorage.getItem('fs-theme');
+  if (saved === 'dark') document.body.classList.add('dark');
+}
+
+/* ==========================================================
+   SIDEBAR / MOBILE
+   ========================================================== */
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebarBackdrop');
+  sb.classList.toggle('open');
+  bd.classList.toggle('active');
+}
+
+/* ==========================================================
+   ROUTER
+   ========================================================== */
+function navigate(page) {
+  // Pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+
+  // Nav items
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const nav = document.querySelector('[data-page="' + page + '"]');
+  if (nav) nav.classList.add('active');
+
+  // Re-trigger animations by cycling the class
+  if (target) {
+    target.style.animation = 'none';
+    target.offsetHeight; // reflow
+    target.style.animation = '';
+  }
+
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('active');
+
+  // Scroll to top
+  document.querySelector('.main-content').scrollTop = 0;
+}
+
+/* ==========================================================
+   ANIMATED COUNTER
+   ========================================================== */
+function animateCounter(el, target, duration = 1000, isFloat = false) {
+  const start = performance.now();
+  const initial = 0;
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = initial + (target - initial) * eased;
+    el.textContent = isFloat ? current.toFixed(2) : Math.round(current).toLocaleString();
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ==========================================================
+   TOAST
+   ========================================================== */
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast visible ' + type;
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => { toast.className = 'toast'; }, 300);
+  }, 3500);
+}
+
+/* ==========================================================
+   API HELPERS
+   ========================================================== */
+async function apiGet(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    return await res.json();
+  } catch (e) {
+    showToast('API Error: ' + e.message, 'error');
+    throw e;
+  }
+}
+
+async function apiPost(url, body) {
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    return await res.json();
+  } catch (e) {
+    showToast('API Error: ' + e.message, 'error');
+    throw e;
+  }
+}
+
+/* ==========================================================
+   CHART HELPERS
+   ========================================================== */
+function getChartDefaults() {
+  const style = getComputedStyle(document.body);
+  return {
+    gridColor: style.getPropertyValue('--chart-grid').trim() || 'rgba(148,163,184,0.15)',
+    textColor: style.getPropertyValue('--chart-text').trim() || '#64748b',
+    font: 'Inter'
+  };
+}
+
+function destroyChart(key) {
+  if (charts[key]) {
+    try { charts[key].destroy(); } catch(e) {}
+    charts[key] = null;
+  }
+}
+
+function buildLegend(containerId, items) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(item =>
+    `<span class="chart-legend-item"><span class="legend-dot" style="background:${item.color}"></span>${item.label}</span>`
+  ).join('');
+}
+
+/* ==========================================================
+   POPULATE DROPDOWNS
+   ========================================================== */
+function populateSelect(selectId, options, placeholder = 'Select…') {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = `<option value="">${placeholder}</option>` +
+    options.map(o => `<option value="${o}">${o}</option>`).join('');
+}
+
+async function loadSeriesData() {
+  try {
+    const data = await apiGet('/api/series');
+    seriesData.stores = data.stores || [];
+    seriesData.items = data.items || [];
+
+    // Populate all dropdowns
+    ['fc-store', 'eda-store'].forEach(id => populateSelect(id, seriesData.stores, 'Select store'));
+    ['fc-item', 'eda-item'].forEach(id => populateSelect(id, seriesData.items, 'Select item'));
+
+    // Set defaults if available
+    if (seriesData.stores.length) {
+      document.getElementById('fc-store').value = seriesData.stores[0];
+      document.getElementById('eda-store').value = seriesData.stores[0];
+    }
+    if (seriesData.items.length) {
+      document.getElementById('fc-item').value = seriesData.items[0];
+      document.getElementById('eda-item').value = seriesData.items[0];
+    }
+
+    // Initialize compare page with 2 selectors
+    initComparisonSelectors();
+  } catch (e) {
+    console.error('Failed to load series data:', e);
+  }
+}
+
+/* ==========================================================
+   DASHBOARD
+   ========================================================== */
+async function loadDashboard() {
+  try {
+    const data = await apiGet('/api/summary');
+    animateCounter(document.getElementById('kpi-records'), data.total_rows || 0);
+    animateCounter(document.getElementById('kpi-stores'), data.num_stores || 0);
+    animateCounter(document.getElementById('kpi-items'), data.num_items || 0);
+
+    const dr = document.getElementById('kpi-daterange');
+    if (data.date_range && data.date_range.length === 2) {
+      dr.textContent = `${data.date_range[0]} → ${data.date_range[1]}`;
+    }
+  } catch (e) {
+    console.error('Dashboard load failed:', e);
+  }
+}
+
+/* ==========================================================
+   FORECAST
+   ========================================================== */
+async function runForecast() {
+  const store = document.getElementById('fc-store').value;
+  const item  = document.getElementById('fc-item').value;
+  if (!store || !item) { showToast('Please select both store and item', 'error'); return; }
+
+  // UI state
+  document.getElementById('fc-results').classList.add('hidden');
+  document.getElementById('fc-loading').classList.add('active');
+  document.getElementById('fc-run-btn').disabled = true;
+
+  try {
+    const data = await apiPost('/api/forecast', { store, item });
+    forecastData = data;
+    renderForecast(data);
+    showToast('Forecast generated successfully!', 'success');
+  } catch (e) {
+    console.error('Forecast failed:', e);
+  } finally {
+    document.getElementById('fc-loading').classList.remove('active');
+    document.getElementById('fc-run-btn').disabled = false;
+  }
+}
+
+function renderForecast(data) {
+  if (data.error) { showToast(data.error, 'error'); return; }
+  // Metrics — backend returns metrics.rf.MAE, metrics.weekly.MAE, metrics.yearly.MAE
+  const rf = (data.metrics || {}).rf || {};
+  const wk = (data.metrics || {}).weekly || {};
+  const yr = (data.metrics || {}).yearly || {};
+
+  animateCounter(document.getElementById('fc-mae'), rf.MAE || 0, 800, true);
+  animateCounter(document.getElementById('fc-rmse'), rf.RMSE || 0, 800, true);
+
+  const mapeEl = document.getElementById('fc-mape');
+  animateCounter(mapeEl, rf['MAPE_%'] || 0, 800, true);
+  setTimeout(() => { mapeEl.textContent = (rf['MAPE_%'] || 0).toFixed(2) + '%'; }, 900);
+
+  // Baseline
+  const baseMAE = Math.min(wk.MAE || Infinity, yr.MAE || Infinity);
+  const baseName = (wk.MAE || Infinity) <= (yr.MAE || Infinity) ? 'Weekly Naive' : 'Yearly Naive';
+  animateCounter(document.getElementById('fc-baseline-mae'), baseMAE, 800, true);
+  document.getElementById('fc-baseline-name').textContent = baseName;
+
+  // Improvement badge
+  const improvement = ((baseMAE - (rf.MAE || 0)) / baseMAE * 100);
+  const badge = document.getElementById('fc-improvement-badge');
+  if (improvement > 0) {
+    badge.className = 'badge';
+    badge.textContent = `✓ ${improvement.toFixed(1)}% better than ${baseName}`;
+  } else {
+    badge.className = 'badge bad';
+    badge.textContent = `✗ ${Math.abs(improvement).toFixed(1)}% worse than ${baseName}`;
+  }
+
+  // Chart
+  renderForecastChart(data);
+
+  // Feature importance — backend returns top_features as [[name, value], ...]
+  const fi = {};
+  (data.top_features || []).forEach(f => { fi[f[0]] = f[1]; });
+  renderFeatureImportance(fi);
+
+  // Show results
+  document.getElementById('fc-results').classList.remove('hidden');
+}
+
+function renderForecastChart(data) {
+  destroyChart('forecast');
+  const ctx = document.getElementById('fc-chart').getContext('2d');
+  const defaults = getChartDefaults();
+
+  const dates    = data.test_dates || [];
+  const actual   = data.actual || [];
+  const model    = data.rf || [];
+  const history  = (data.history || {}).sales || [];
+  const histDates = (data.history || {}).dates || [];
+  const baseline = data.weekly || [];
+
+  const allLabels = [...histDates, ...dates];
+  const historyFull = [...history, ...Array(dates.length).fill(null)];
+  const actualFull  = [...Array(histDates.length).fill(null), ...actual];
+  const modelFull   = [...Array(histDates.length).fill(null), ...model];
+  const baselineFull= [...Array(histDates.length).fill(null), ...baseline];
+
+  // Legend
+  buildLegend('fc-legend', [
+    { color: '#94a3b8', label: 'History' },
+    { color: '#6366f1', label: 'Model Prediction' },
+    { color: '#10b981', label: 'Actual' },
+    { color: '#f59e0b', label: 'Baseline' }
+  ]);
+
+  charts.forecast = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: allLabels,
+      datasets: [
+        {
+          label: 'History',
+          data: historyFull,
+          borderColor: '#94a3b8',
+          backgroundColor: 'rgba(148,163,184,0.05)',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: 'Model Prediction',
+          data: modelFull,
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99,102,241,0.1)',
+          borderWidth: 2.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#6366f1',
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: 'Actual',
+          data: actualFull,
+          borderColor: '#10b981',
+          borderWidth: 2,
+          pointRadius: 2,
+          pointBackgroundColor: '#10b981',
+          tension: 0.3,
+          borderDash: [5, 3]
+        },
+        {
+          label: 'Baseline',
+          data: baselineFull,
+          borderColor: '#f59e0b',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.3,
+          borderDash: [8, 4]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,0.9)',
+          titleFont: { family: defaults.font, size: 13 },
+          bodyFont: { family: 'JetBrains Mono', size: 12 },
+          padding: 12,
+          cornerRadius: 8,
+          displayColors: true
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: defaults.gridColor },
+          ticks: { color: defaults.textColor, font: { family: defaults.font, size: 11 }, maxTicksLimit: 10 }
+        },
+        y: {
+          grid: { color: defaults.gridColor },
+          ticks: { color: defaults.textColor, font: { family: 'JetBrains Mono', size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function renderFeatureImportance(fi) {
+  const container = document.getElementById('fc-features');
+  const entries = Object.entries(fi).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const maxVal = entries.length ? entries[0][1] : 1;
+
+  container.innerHTML = entries.map(([name, val]) => {
+    const pct = (val / maxVal * 100).toFixed(1);
+    return `
+      <div class="feat-row fade-in-up">
+        <span class="feat-name">${name}</span>
+        <div class="feat-bar-bg">
+          <div class="feat-bar" style="width:${pct}%"></div>
+        </div>
+        <span class="feat-val">${(val * 100).toFixed(1)}%</span>
+      </div>`;
+  }).join('');
+}
+
+/* ==========================================================
+   CSV DOWNLOAD
+   ========================================================== */
+function downloadCSV() {
+  if (!forecastData) { showToast('No forecast data to download', 'error'); return; }
+  const d = forecastData;
+  let csv = 'Date,Actual,Predicted,Baseline\n';
+  (d.test_dates || []).forEach((date, i) => {
+    csv += `${date},${(d.actual||[])[i]||''},${(d.rf||[])[i]||''},${(d.weekly||[])[i]||''}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `forecast_${document.getElementById('fc-store').value}_${document.getElementById('fc-item').value}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV downloaded!', 'success');
+}
+
+/* ==========================================================
+   EDA
+   ========================================================== */
+async function runEDA() {
+  const store = document.getElementById('eda-store').value;
+  const item  = document.getElementById('eda-item').value;
+  if (!store || !item) { showToast('Please select both store and item', 'error'); return; }
+
+  document.getElementById('eda-results').classList.add('hidden');
+  document.getElementById('eda-loading').classList.add('active');
+  document.getElementById('eda-run-btn').disabled = true;
+
+  try {
+    const data = await apiGet(`/api/eda?store=${encodeURIComponent(store)}&item=${encodeURIComponent(item)}`);
+    renderEDA(data);
+    showToast('Analysis complete!', 'success');
+  } catch (e) {
+    console.error('EDA failed:', e);
+  } finally {
+    document.getElementById('eda-loading').classList.remove('active');
+    document.getElementById('eda-run-btn').disabled = false;
+  }
+}
+
+function renderEDA(data) {
+  if (data.error) { showToast(data.error, 'error'); return; }
+  // Stats — backend returns num_days, avg_sales, std_sales, min_sales, max_sales
+  animateCounter(document.getElementById('eda-days'), data.num_days || 0);
+  animateCounter(document.getElementById('eda-avg'), data.avg_sales || 0, 800, true);
+  animateCounter(document.getElementById('eda-std'), data.std_sales || 0, 800, true);
+  animateCounter(document.getElementById('eda-min'), data.min_sales || 0);
+  animateCounter(document.getElementById('eda-max'), data.max_sales || 0);
+
+  // Seasonality
+  const sText = document.getElementById('eda-season-text');
+  const sSub  = document.getElementById('eda-season-sub');
+  const season = data.dominant_seasonality || 'WEEKLY';
+  sText.textContent = `${season} pattern dominates`;
+  sSub.textContent = season === 'WEEKLY'
+    ? 'Strong day-of-week effect detected'
+    : 'Strong month-of-year effect detected';
+
+  // Timeline Chart
+  renderEDATimeline(data);
+  renderEDAWeekday(data);
+  renderEDAMonth(data);
+
+  document.getElementById('eda-results').classList.remove('hidden');
+}
+
+function renderEDATimeline(data) {
+  destroyChart('edaTimeline');
+  const ctx = document.getElementById('eda-timeline-chart').getContext('2d');
+  const defaults = getChartDefaults();
+
+  // Backend already returns weekly-downsampled timeline
+  const weeklyDates = (data.timeline || {}).dates || [];
+  const weeklySales = (data.timeline || {}).sales || [];
+
+  charts.edaTimeline = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: weeklyDates,
+      datasets: [{
+        label: 'Weekly Avg Sales',
+        data: weeklySales,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.08)',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,0.9)',
+          bodyFont: { family: 'JetBrains Mono', size: 12 },
+          padding: 12,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: defaults.gridColor },
+          ticks: { color: defaults.textColor, font: { size: 11 }, maxTicksLimit: 12 }
+        },
+        y: {
+          grid: { color: defaults.gridColor },
+          ticks: { color: defaults.textColor, font: { family: 'JetBrains Mono', size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function renderEDAWeekday(data) {
+  destroyChart('edaWeekday');
+  const ctx = document.getElementById('eda-weekday-chart').getContext('2d');
+  const defaults = getChartDefaults();
+  const labels = (data.by_weekday || {}).labels || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const values = (data.by_weekday || {}).values || [];
+
+  charts.edaWeekday = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Avg Sales',
+        data: values,
+        backgroundColor: values.map((_, i) => {
+          const alpha = 0.5 + (i / labels.length) * 0.5;
+          return `rgba(16, 185, 129, ${alpha})`;
+        }),
+        borderColor: '#10b981',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', bodyFont: { family: 'JetBrains Mono', size: 12 }, padding: 10, cornerRadius: 8 }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: defaults.textColor, font: { size: 11 } } },
+        y: { grid: { color: defaults.gridColor }, ticks: { color: defaults.textColor, font: { family: 'JetBrains Mono', size: 11 } } }
+      }
+    }
+  });
+}
+
+function renderEDAMonth(data) {
+  destroyChart('edaMonth');
+  const ctx = document.getElementById('eda-month-chart').getContext('2d');
+  const defaults = getChartDefaults();
+  const labels = (data.by_month || {}).labels || ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const values = (data.by_month || {}).values || [];
+
+  charts.edaMonth = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Avg Sales',
+        data: values,
+        backgroundColor: values.map((_, i) => {
+          const alpha = 0.4 + (i / labels.length) * 0.6;
+          return `rgba(245, 158, 11, ${alpha})`;
+        }),
+        borderColor: '#f59e0b',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', bodyFont: { family: 'JetBrains Mono', size: 12 }, padding: 10, cornerRadius: 8 }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: defaults.textColor, font: { size: 11 } } },
+        y: { grid: { color: defaults.gridColor }, ticks: { color: defaults.textColor, font: { family: 'JetBrains Mono', size: 11 } } }
+      }
+    }
+  });
+}
+
+/* ==========================================================
+   COMPARE
+   ========================================================== */
+let comparisonCount = 0;
+
+function initComparisonSelectors() {
+  const container = document.getElementById('cmp-selectors');
+  container.innerHTML = '';
+  comparisonCount = 0;
+  addComparisonSeries();
+  addComparisonSeries();
+}
+
+function addComparisonSeries() {
+  if (comparisonCount >= 4) { showToast('Maximum 4 series allowed', 'error'); return; }
+  const idx = comparisonCount;
+  const color = SERIES_COLORS[idx];
+  const container = document.getElementById('cmp-selectors');
+
+  const div = document.createElement('div');
+  div.className = 'series-selector';
+  div.id = `cmp-series-${idx}`;
+  div.innerHTML = `
+    <span class="series-label" style="background:${color.main}">${idx + 1}</span>
+    <div class="form-group">
+      <label>Store</label>
+      <select class="select-styled" id="cmp-store-${idx}">
+        <option value="">Select store</option>
+        ${seriesData.stores.map(s => `<option value="${s}"${s === seriesData.stores[0] ? ' selected' : ''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Item</label>
+      <select class="select-styled" id="cmp-item-${idx}">
+        <option value="">Select item</option>
+        ${seriesData.items.map(it => `<option value="${it}"${it === seriesData.items[Math.min(idx, seriesData.items.length - 1)] ? ' selected' : ''}>${it}</option>`).join('')}
+      </select>
+    </div>
+    ${idx >= 2 ? `<button class="btn-secondary btn-sm btn-danger" onclick="removeComparisonSeries(${idx})">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Remove
+    </button>` : ''}
+  `;
+
+  container.appendChild(div);
+  comparisonCount++;
+
+  // Hide add button when at max
+  document.getElementById('cmp-add-btn').style.display = comparisonCount >= 4 ? 'none' : '';
+}
+
+function removeComparisonSeries(idx) {
+  const el = document.getElementById(`cmp-series-${idx}`);
+  if (el) el.remove();
+  comparisonCount--;
+  document.getElementById('cmp-add-btn').style.display = '';
+}
+
+async function runComparison() {
+  const pairs = [];
+  const selectors = document.querySelectorAll('#cmp-selectors .series-selector');
+  selectors.forEach(sel => {
+    const storeEl = sel.querySelector('select[id^="cmp-store-"]');
+    const itemEl  = sel.querySelector('select[id^="cmp-item-"]');
+    if (storeEl && itemEl && storeEl.value && itemEl.value) {
+      pairs.push({ store: storeEl.value, item: itemEl.value });
+    }
+  });
+
+  if (pairs.length < 2) { showToast('Select at least 2 series to compare', 'error'); return; }
+
+  document.getElementById('cmp-results').classList.add('hidden');
+  document.getElementById('cmp-loading').classList.add('active');
+
+  try {
+    const data = await apiPost('/api/compare', { pairs });
+    renderComparison(data, pairs);
+    showToast('Comparison ready!', 'success');
+  } catch (e) {
+    console.error('Comparison failed:', e);
+  } finally {
+    document.getElementById('cmp-loading').classList.remove('active');
+  }
+}
+
+function renderComparison(results, pairs) {
+  // Backend returns array directly, not { results: [...] }
+  if (!Array.isArray(results)) results = results.results || [];
+
+  // Table — backend returns metrics.rf.MAE, metrics.rf.MAPE_%, metrics.rf.RMSE
+  const tbody = document.getElementById('cmp-table-body');
+  tbody.innerHTML = results.map((r, i) => {
+    if (r.error) return `<tr><td colspan="6">${r.store}/${r.item}: ${r.error}</td></tr>`;
+    const color = SERIES_COLORS[i % SERIES_COLORS.length];
+    const rf = (r.metrics || {}).rf || {};
+    return `<tr>
+      <td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${color.main};margin-right:8px;vertical-align:middle;"></span>${color.name}</td>
+      <td>${r.store || pairs[i]?.store || ''}</td>
+      <td>${r.item || pairs[i]?.item || ''}</td>
+      <td class="value-col">${(rf.MAE || 0).toFixed(2)}</td>
+      <td class="value-col">${(rf['MAPE_%'] || 0).toFixed(2)}%</td>
+      <td class="value-col">${(rf.RMSE || 0).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+
+  // Chart
+  destroyChart('compare');
+  const ctx = document.getElementById('cmp-chart').getContext('2d');
+  const defaults = getChartDefaults();
+
+  const validResults = results.filter(r => !r.error);
+  const datasets = validResults.map((r, i) => {
+    const color = SERIES_COLORS[i % SERIES_COLORS.length];
+    return {
+      label: `Store ${r.store} / Item ${r.item}`,
+      data: r.rf || [],
+      borderColor: color.main,
+      backgroundColor: color.bg,
+      borderWidth: 2.5,
+      pointRadius: 2,
+      pointBackgroundColor: color.main,
+      tension: 0.3,
+      fill: false
+    };
+  });
+
+  const labels = validResults[0]?.test_dates || [];
+
+  // Legend
+  buildLegend('cmp-legend', validResults.map((r, i) => ({
+    color: SERIES_COLORS[i % SERIES_COLORS.length].main,
+    label: `Store ${r.store} / Item ${r.item}`
+  })));
+
+  charts.compare = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,0.9)',
+          bodyFont: { family: 'JetBrains Mono', size: 12 },
+          padding: 12,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        x: { grid: { color: defaults.gridColor }, ticks: { color: defaults.textColor, font: { size: 11 }, maxTicksLimit: 10 } },
+        y: { grid: { color: defaults.gridColor }, ticks: { color: defaults.textColor, font: { family: 'JetBrains Mono', size: 11 } } }
+      }
+    }
+  });
+
+  document.getElementById('cmp-results').classList.remove('hidden');
+}
+
+/* ==========================================================
+   INIT
+   ========================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  restoreTheme();
+  loadSeriesData();
+  loadDashboard();
+});
+</script>
+
+</body>
+</html>
