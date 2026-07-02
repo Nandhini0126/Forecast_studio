@@ -8,14 +8,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Large data files
-data/retail_sales.csv
-# If there are other CSVs or data files in the future, we can ignore them too
-data/*.csv
-data/*.xlsx
-data/*.parquet
-data/*.zip
-data/*.tar.gz
 
 # VS Code settings
 .vscode/
